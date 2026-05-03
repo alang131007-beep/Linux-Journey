@@ -22,7 +22,7 @@ con la meta de trabajar en infraestructura de IA.
 - touch — crear archivos
 - cat — leer archivos
 - echo — imprimir texto
-- > — redirigir texto a un archivo
+- ">" — redirigir texto a un archivo
 - man — manual de cualquier comando
 
 ### Lo que entendí hoy
