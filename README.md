@@ -15,3 +15,15 @@ con la meta de trabajar en infraestructura de IA.
 - [ ] Servidores
 - [ ] Docker
 - [ ] Primera certificación LFCS
+
+## Día 2 - 03/05/2025
+
+### Comandos aprendidos
+- touch — crear archivos
+- cat — leer archivos
+- echo — imprimir texto
+- > — redirigir texto a un archivo
+- man — manual de cualquier comando
+
+### Lo que entendí hoy
+La terminal siempre muestra en qué carpeta estás.
