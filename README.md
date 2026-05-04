@@ -45,3 +45,17 @@ Cada archivo tiene permisos para dueño, grupo y otros
 Cambié de DistroSea a Killercoda, mejor compatibilidad
 La terminal siempre muestra en qué carpeta estás.
 
+## Día 4 - 03/05/2025
+
+### Comandos aprendidos
+- grep — buscar texto dentro de archivos
+- grep -r — buscar recursivamente en carpetas
+- grep -i — ignorar mayúsculas
+- grep -c — contar ocurrencias
+- find — buscar archivos y carpetas
+- find -type f/d — filtrar por tipo
+- wc -l / wc -w — contar líneas y palabras
+
+### Concepto importante
+Las banderas se pueden combinar: -ri busca recursivo
+e ignorando mayúsculas al mismo tiempo.
