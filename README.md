@@ -43,7 +43,6 @@ Cada archivo tiene permisos para dueño, grupo y otros
 
 ### Plataforma
 Cambié de DistroSea a Killercoda, mejor compatibilidad
-La terminal siempre muestra en qué carpeta estás.
 
 ## Día 4 - 03/05/2025
 
