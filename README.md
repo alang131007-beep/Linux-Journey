@@ -58,3 +58,20 @@ Cambié de DistroSea a Killercoda, mejor compatibilidad
 ### Concepto importante
 Las banderas se pueden combinar: -ri busca recursivo
 e ignorando mayúsculas al mismo tiempo.
+
+## Día 5 - 04/05/2025
+
+### Comandos aprendidos
+- chmod — cambiar permisos (644, 755, 777)
+- chown — cambiar dueño de archivo
+- ps aux — ver procesos activos
+- kill / kill -9 — terminar procesos
+- top / htop — monitor de recursos
+- df -h — espacio en disco
+- free -h — uso de RAM
+- alias — crear atajos de comandos
+- unalias — eliminar alias
+
+### Concepto importante
+Permisos: r=4, w=2, x=1, se suman por grupo
+El pipe | conecta comandos entre sí
