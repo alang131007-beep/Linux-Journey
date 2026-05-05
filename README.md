@@ -16,7 +16,7 @@ con la meta de trabajar en infraestructura de IA.
 - [ ] Docker
 - [ ] Primera certificación LFCS
 
-## Día 2 - 03/05/2025
+## Día 2 - 02/05/2025
 
 ### Comandos aprendidos
 - touch — crear archivos
@@ -44,7 +44,7 @@ Cada archivo tiene permisos para dueño, grupo y otros
 ### Plataforma
 Cambié de DistroSea a Killercoda, mejor compatibilidad
 
-## Día 4 - 03/05/2025
+## Día 4 - 04/05/2025
 
 ### Comandos aprendidos
 - grep — buscar texto dentro de archivos
@@ -59,7 +59,7 @@ Cambié de DistroSea a Killercoda, mejor compatibilidad
 Las banderas se pueden combinar: -ri busca recursivo
 e ignorando mayúsculas al mismo tiempo.
 
-## Día 5 - 04/05/2025
+## Día 5 - 05/05/2025
 
 ### Comandos aprendidos
 - chmod — cambiar permisos (644, 755, 777)
