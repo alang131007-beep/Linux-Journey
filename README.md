@@ -75,3 +75,22 @@ e ignorando mayúsculas al mismo tiempo.
 ### Concepto importante
 Permisos: r=4, w=2, x=1, se suman por grupo
 El pipe | conecta comandos entre sí
+
+## Día 6 - 05/05/2025
+
+### Comandos aprendidos
+- ping -c 4 — verificar conexión a internet
+- ip addr — ver IP local
+- curl ifconfig.me — ver IP pública
+- netstat -tuln — ver puertos abiertos
+- ssh usuario@IP — conectarse a servidor remoto
+- wget / curl -O — descargar archivos desde terminal
+- printenv — ver variables de entorno
+- export VARIABLE="valor" — crear variable de entorno
+
+### Puertos clave
+22=SSH, 80=HTTP, 443=HTTPS, 3306=MySQL
+
+### Concepto importante
+Las variables de entorno guardan configuraciones
+que los programas usan. Clave para APIs de IA.
