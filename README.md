@@ -88,6 +88,24 @@ El pipe | conecta comandos entre sí
 - printenv — ver variables de entorno
 - export VARIABLE="valor" — crear variable de entorno
 
+- ## Día 7 - 06/05/2025
+
+### Tema: Bash Scripting
+
+### Lo aprendido
+- Crear scripts con nano o cat
+- chmod +x — dar permisos de ejecución
+- ./ — ejecutar un script
+- Variables dentro de scripts
+- Condicional if/else/fi
+
+### Primer script creado
+Automaticé whoami, date y pwd en un solo comando
+
+### Concepto importante
+Un script agrupa comandos para ejecutarlos 
+automáticamente. Base de la automatización en servidores.
+
 ### Puertos clave
 22=SSH, 80=HTTP, 443=HTTPS, 3306=MySQL
 
