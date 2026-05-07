@@ -88,6 +88,13 @@ El pipe | conecta comandos entre sí
 - printenv — ver variables de entorno
 - export VARIABLE="valor" — crear variable de entorno
 
+### Puertos clave
+22=SSH, 80=HTTP, 443=HTTPS, 3306=MySQL
+
+### Concepto importante
+Las variables de entorno guardan configuraciones
+que los programas usan. Clave para APIs de IA.
+
 - ## Día 7 - 06/05/2025
 
 ### Tema: Bash Scripting
@@ -105,10 +112,3 @@ Automaticé whoami, date y pwd en un solo comando
 ### Concepto importante
 Un script agrupa comandos para ejecutarlos 
 automáticamente. Base de la automatización en servidores.
-
-### Puertos clave
-22=SSH, 80=HTTP, 443=HTTPS, 3306=MySQL
-
-### Concepto importante
-Las variables de entorno guardan configuraciones
-que los programas usan. Clave para APIs de IA.
