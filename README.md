@@ -112,3 +112,70 @@ Automaticé whoami, date y pwd en un solo comando
 ### Concepto importante
 Un script agrupa comandos para ejecutarlos 
 automáticamente. Base de la automatización en servidores.
+
+# Redirección de Errores en Linux
+
+**Fecha:** 19 de mayo de 2026  
+**Tema:** stdin / stdout / stderr y operadores de redirección
+
+---
+
+## Los 3 canales estándar
+
+Todo proceso en Linux tiene 3 canales:
+
+| Canal | Nombre | Número |
+|-------|--------|--------|
+| Entrada | `stdin` | 0 |
+| Salida normal | `stdout` | 1 |
+| Salida de errores | `stderr` | 2 |
+
+---
+
+## Operadores aprendidos
+
+| Operador | Qué hace |
+|----------|----------|
+| `>` | Redirige stdout a un archivo |
+| `2>` | Redirige stderr a un archivo |
+| `2>/dev/null` | Descarta errores completamente |
+| `2>&1` | Une stderr hacia donde apunta stdout |
+| `&>` | Une stdout y stderr en un solo archivo (atajo moderno) |
+
+---
+
+## Ejemplos practicados
+
+```bash
+# Redirigir error a archivo
+ls falsacarpeta.sh 2> errores.txt
+cat errores.txt
+
+# Separar stdout y stderr en archivos distintos
+ls errores.txt listat.txt > salida.txt 2> errores.txt
+
+# Silenciar errores con /dev/null
+ls /agujero.txt 2>/dev/null
+
+# Unir stdout y stderr en un solo archivo
+ls errores.txt agujero.txt &> todo.txt
+cat todo.txt
+```
+
+---
+
+## Notas personales
+
+- `/dev/null` es un "agujero negro": todo lo que se manda ahí desaparece
+- `&>` es el atajo moderno de `> archivo 2>&1`
+- En servidores de producción se usa `2>` para separar logs normales de logs de error
+- Cuidado con las comillas al escribir `2>/dev/null` — un `"` accidental abre un string multilínea en bash
+
+---
+
+## Ejercicios completados
+
+- [x] Ejercicio 1 — Redirigir stderr a un archivo y verificar con `cat`
+- [x] Ejercicio 2 — Separar stdout y stderr en archivos distintos con un solo comando
+- [x] Ejercicio 3 — Silenciar errores con `/dev/null`
+- [x] Ejercicio 4 — Unir stdout y stderr en un archivo con `&>`
