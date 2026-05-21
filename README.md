@@ -179,3 +179,143 @@ cat todo.txt
 - [x] Ejercicio 2 — Separar stdout y stderr en archivos distintos con un solo comando
 - [x] Ejercicio 3 — Silenciar errores con `/dev/null`
 - [x] Ejercicio 4 — Unir stdout y stderr en un archivo con `&>`
+
+ # Pipes y Permisos Avanzados en Linux
+
+**Fecha:** 21 de mayo de 2026
+
+---
+
+## PARTE 1 — Pipes (`|`)
+
+### ¿Qué es un pipe?
+
+Conecta la salida (stdout) de un comando con la entrada (stdin) del siguiente. Los datos fluyen sin necesidad de archivos intermedios.
+
+```
+comando1 | comando2 | comando3
+```
+
+### Comandos más usados con pipes
+
+| Comando | Para qué |
+|---------|----------|
+| `grep` | Filtrar líneas por patrón |
+| `sort` | Ordenar resultados |
+| `wc -l` | Contar líneas |
+| `head -n` | Primeras n líneas |
+| `tail -n` | Últimas n líneas |
+| `cut` | Extraer columnas de texto |
+| `uniq` | Eliminar duplicados |
+
+### Ejemplos practicados
+
+```bash
+# Filtrar procesos
+ps aux | grep bash
+
+# Contar archivos en /etc
+ls /etc | wc -l          # resultado: 234
+
+# Encadenar 3 comandos
+ls /etc | grep "\.conf$" | sort
+
+# Filtrar y contar en archivo de texto
+cat frases.txt | grep "error critico" | wc -l
+```
+
+### Nota importante
+
+`grep` siempre aparece en sus propios resultados. Para evitarlo:
+```bash
+ps aux | grep [b]ash
+```
+
+---
+
+## PARTE 2 — Permisos Avanzados
+
+### Los 3 bits especiales
+
+| Bit | Símbolo | Número | Dónde aparece |
+|-----|---------|--------|---------------|
+| SUID | `s` | 4 | Posición x del dueño |
+| SGID | `s` | 2 | Posición x del grupo |
+| Sticky | `t` | 1 | Posición x de otros |
+
+### SUID (Set User ID)
+
+El ejecutable corre con los permisos del dueño, no del usuario que lo ejecuta.
+
+```bash
+chmod u+s archivo
+chmod 4755 archivo
+```
+
+Binarios con SUID en el sistema:
+```bash
+find /usr/bin -perm /4000
+# ejemplos: passwd, su, sudo, mount, umount, gpasswd
+```
+
+### SGID (Set Group ID)
+
+En directorios: los archivos creados adentro heredan el grupo del directorio.
+
+```bash
+chmod g+s directorio
+chmod 2755 directorio
+```
+
+### Sticky Bit
+
+Solo el dueño del archivo puede borrarlo, aunque otros tengan permisos de escritura.
+
+```bash
+chmod +t directorio
+chmod 1777 directorio
+```
+
+Ejemplo real: `/tmp` siempre tiene sticky bit activo (`drwxrwxrwt`).
+
+### Combinar bits
+
+```
+SUID + SGID + Sticky + permisos normales
+  4  +   2  +   1   +       755
+```
+
+### Ejemplos practicados
+
+```bash
+# Ver SUID en el sistema
+find /usr/bin -perm /4000
+
+# Verificar sticky bit en /tmp
+ls -la / | grep tmp          # drwxrwxrwt
+
+# Crear directorio con sticky bit
+mkdir ~/sticky_test
+chmod +t ~/sticky_test
+ls -la ~ | grep sticky_test  # drwxrwxr-t
+
+# Crear directorio con SGID
+mkdir ~/compartido
+chmod g+s ~/compartido
+ls -la ~ | grep compartido   # drwxrwsr-x
+```
+
+---
+
+## Ejercicios completados
+
+### Pipes
+- [x] Ejercicio 1 — Filtrar procesos con `ps aux | grep bash`
+- [x] Ejercicio 2 — Contar entradas en `/etc` con `wc -l`
+- [x] Ejercicio 3 — Encadenar 3 comandos: listar, filtrar `.conf` y ordenar
+- [x] Ejercicio 4 — Filtrar y contar líneas en archivo de texto
+
+### Permisos avanzados
+- [x] Ejercicio 1 — Encontrar binarios con SUID con `find -perm /4000`
+- [x] Ejercicio 2 — Verificar sticky bit en `/tmp` y crearlo en directorio propio
+- [x] Ejercicio 3 — Crear directorio con SGID y verificar la `s` en el grupo
