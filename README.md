@@ -319,3 +319,85 @@ ls -la ~ | grep compartido   # drwxrwsr-x
 - [x] Ejercicio 1 — Encontrar binarios con SUID con `find -perm /4000`
 - [x] Ejercicio 2 — Verificar sticky bit en `/tmp` y crearlo en directorio propio
 - [x] Ejercicio 3 — Crear directorio con SGID y verificar la `s` en el grupo
+
+# Compresión y Archivos en Linux
+
+**Fecha:** 22 de mayo de 2026
+**Nota:** Tema a repasar en la siguiente sesión.
+
+---
+
+## Herramientas
+
+### gzip — comprimir un solo archivo
+```bash
+gzip archivo.txt          # comprime → archivo.txt.gz
+gzip -d archivo.txt.gz    # descomprime
+gunzip archivo.txt.gz     # igual que gzip -d
+```
+⚠️ gzip **reemplaza** el archivo original en ambas direcciones.
+
+---
+
+### tar — empaquetar varios archivos
+Solo agrupa, no comprime por sí solo.
+
+```bash
+tar -cvf paquete.tar carpeta/     # crear paquete
+tar -xvf paquete.tar              # extraer
+tar -tvf paquete.tar              # ver contenido sin extraer
+tar -xvf paquete.tar -C ~/destino # extraer en otra ubicación
+```
+
+Flags:
+| Flag | Significa |
+|------|-----------|
+| `c` | crear |
+| `x` | extraer |
+| `t` | listar contenido |
+| `v` | verbose (mostrar progreso) |
+| `f` | especificar nombre de archivo |
+| `z` | activar compresión gzip |
+
+---
+
+### tar + gzip — empaquetar Y comprimir
+La combinación más usada en servidores.
+
+```bash
+tar -czvf paquete.tar.gz carpeta/   # crear comprimido
+tar -xzvf paquete.tar.gz            # extraer comprimido
+```
+
+Resultado de la práctica:
+- `paquete.tar` → 10K
+- `paquete.tar.gz` → 228 bytes
+
+---
+
+### zip / unzip — compatible con Windows
+```bash
+zip -r paquete.zip carpeta/          # comprimir
+unzip -l paquete.zip                 # ver contenido sin extraer
+unzip paquete.zip -d ~/destino       # extraer en ubicación específica
+```
+
+---
+
+## Comparación de herramientas
+
+| Herramienta | Agrupa | Comprime | Uso típico |
+|-------------|--------|----------|------------|
+| `gzip` | No | Sí | Un solo archivo |
+| `tar` | Sí | No | Agrupar sin comprimir |
+| `tar.gz` | Sí | Sí | Backups en servidores |
+| `zip` | Sí | Sí | Compatibilidad con Windows |
+
+---
+
+## Ejercicios completados
+
+- [x] Ejercicio 1 — Comprimir y descomprimir con gzip
+- [x] Ejercicio 2 — Empaquetar con tar, listar y extraer con `-C`
+- [x] Ejercicio 3 — Crear tar.gz y comparar tamaño con tar sin comprimir
+- [x] Ejercicio 4 — Comprimir con zip, listar y extraer con `-d`
