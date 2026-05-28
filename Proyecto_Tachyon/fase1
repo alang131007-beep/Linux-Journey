@@ -1,0 +1,124 @@
+# Fase 1 — Usuarios, grupos y permisos
+**Proyecto:** Tachyon-01 Production Server  
+**Empresa:** Nexus Tech KK  
+**Rol:** Junior Linux SysAdmin  
+**Sistema:** Ubuntu 24.04 (ThinkPad T450)
+
+---
+
+## Objetivo
+
+Preparar la estructura base del servidor: crear usuarios del equipo, organizarlos en grupos por área, crear los directorios de trabajo y asignar los permisos correspondientes.
+
+---
+
+## Estructura definida
+
+| Grupo | Usuarios | Directorio | Permisos |
+|-------|----------|------------|----------|
+| `developers` | akira, yuki, ren, hana, takeshi | `/srv/dev-projects` | `770` + SGID |
+| `design` | 5 usuarios | `/srv/design-assets` | `770` |
+| `sysadmin` | 3 usuarios | `/srv/backups`, `/srv/reports` | `770` |
+| `webadmins` | 5 usuarios | `/srv/webadmins` | `775` |
+
+> Total: 18 usuarios creados
+
+---
+
+## Comandos utilizados
+
+### Creación de usuarios con grupo asignado
+
+```bash
+for user in akira yuki ren hana takeshi
+do
+    sudo useradd -m -G developers $user
+done
+```
+
+El flag `-m` crea el directorio home del usuario (`/home/usuario`).  
+El flag `-G` asigna el usuario a un grupo suplementario desde la creación.
+
+### Contraseñas
+
+```bash
+sudo passwd akira
+# (repetido para cada usuario)
+```
+
+### Verificación de usuarios y grupos
+
+```bash
+groups akira          # muestra los grupos del usuario
+id akira              # muestra UID, GID y grupos
+cat /etc/group | grep developers  # verifica miembros del grupo
+```
+
+### Creación de directorios de trabajo
+
+```bash
+sudo mkdir -p /srv/dev-projects
+sudo mkdir -p /srv/design-assets
+sudo mkdir -p /srv/backups
+sudo mkdir -p /srv/reports
+```
+
+### Asignación de grupo dueño y permisos
+
+```bash
+sudo chown root:design /srv/design-assets
+sudo chmod 770 /srv/design-assets
+
+# (patrón repetido para cada grupo con su directorio y permiso correspondiente)
+```
+
+### SGID en directorios
+
+```bash
+sudo chmod g+s /srv/dev-projects
+```
+
+El bit SGID en un directorio hace que los archivos creados dentro hereden el grupo del directorio, no el grupo personal del usuario. Esencial para trabajo colaborativo.
+
+### Verificación de permisos
+
+```bash
+ls -l /srv/
+```
+
+### Prueba de acceso entre grupos
+
+```bash
+su - akira
+touch /srv/dev-projects/test.txt   # debe funcionar (mismo grupo)
+cat /srv/design-assets/archivo.txt # debe fallar (grupo diferente)
+```
+
+---
+
+## Problemas encontrados
+
+- **Organización inicial:** Al comenzar no estaba claro el orden lógico de las tareas (primero usuarios, luego grupos, luego directorios, luego permisos). Se resolvió definiendo la estructura en papel antes de ejecutar.
+- **Permisos mal asignados:** Se usó `755` para sysadmin pensando que daba más libertad, pero `755` solo da `r-x` al grupo, lo que impide escribir. Se corrigió a `770`.
+- **Cambio de contraseñas:** No estaba claro el comando para asignar contraseña post-creación. Se usó `sudo passwd <usuario>`.
+
+---
+
+## Aprendizajes clave
+
+- La diferencia entre grupo primario (`-g`) y grupo suplementario (`-G`) en `useradd`.
+- `770` da acceso total al grupo pero bloquea a otros. `755` da solo lectura/ejecución al grupo.
+- El bit SGID (`g+s`) es fundamental en entornos colaborativos para mantener consistencia de grupos en archivos nuevos.
+- `su - usuario` simula un login completo, incluyendo variables de entorno — útil para probar permisos realmente.
+
+---
+
+## Estado
+
+- [x] Usuarios creados (18)
+- [x] Grupos creados (developers, design, sysadmin, webadmins)
+- [x] Directorios de trabajo creados en `/srv/`
+- [x] Permisos asignados y verificados
+- [x] SGID aplicado
+- [x] Pruebas de acceso realizadas
+- [x] Corrección de permisos sysadmin pendiente de confirmar
