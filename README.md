@@ -401,3 +401,167 @@ unzip paquete.zip -d ~/destino       # extraer en ubicación específica
 - [x] Ejercicio 2 — Empaquetar con tar, listar y extraer con `-C`
 - [x] Ejercicio 3 — Crear tar.gz y comparar tamaño con tar sin comprimir
 - [x] Ejercicio 4 — Comprimir con zip, listar y extraer con `-d`
+
+# Semana 1 — Navegación y comandos base
+**Plan de repaso Linux · Tachyon-01**  
+**Sistema:** Ubuntu 24.04 · ThinkPad T450
+
+---
+
+## Comandos cubiertos
+
+### mkdir — Crear directorios
+```bash
+mkdir carpeta                        # crea una carpeta
+mkdir -p carpeta/sub1 carpeta/sub2   # crea múltiples niveles de un jalón
+```
+> `-p` crea todos los niveles necesarios sin error si ya existen.
+
+---
+
+### touch — Crear archivos vacíos
+```bash
+touch archivo.txt
+touch ruta/completa/archivo.txt
+```
+
+---
+
+### echo — Escribir texto
+```bash
+echo "texto" > archivo.txt    # crea/sobreescribe el archivo
+echo "texto" >> archivo.txt   # agrega al final sin borrar
+```
+> `>` sobreescribe · `>>` acumula
+
+---
+
+### cat — Leer archivos
+```bash
+cat archivo.txt
+cat ruta/completa/archivo.txt
+```
+
+---
+
+### head y tail — Leer parcialmente
+```bash
+head -3 archivo.txt    # primeras 3 líneas
+tail -3 archivo.txt    # últimas 3 líneas
+```
+
+---
+
+### cp — Copiar
+```bash
+cp origen.txt destino.txt              # copia con nuevo nombre
+cp origen.txt ruta/destino/            # copia a otra carpeta
+cp -r carpeta/ destino/                # copia carpeta completa (-r para directorios)
+```
+
+---
+
+### mv — Mover o renombrar
+```bash
+mv archivo.txt nueva_ruta/             # mueve
+mv archivo.txt nuevo_nombre.txt        # renombra
+mv archivo.txt nueva_ruta/nuevo.txt    # mueve y renombra
+```
+
+---
+
+### rm — Eliminar
+```bash
+rm archivo.txt          # elimina archivo
+rm -r carpeta/          # elimina carpeta y todo su contenido
+```
+> ⚠️ No hay papelera — rm es permanente.
+
+---
+
+### pwd — Ver directorio actual
+```bash
+pwd    # muestra la ruta absoluta donde estás parado
+```
+> Úsalo antes de cualquier operación importante para no operar en el lugar equivocado.
+
+---
+
+### cd — Navegar entre directorios
+```bash
+cd carpeta/              # entra a carpeta
+cd ruta/completa/sub/    # ruta relativa
+cd ~                     # regresa a home siempre
+cd ..                    # sube un nivel
+cd -                     # regresa al directorio anterior
+```
+
+---
+
+### ls — Listar contenido
+```bash
+ls                  # lista carpeta actual
+ls ruta/            # lista otra carpeta
+ls -l               # formato detallado (permisos, dueño, tamaño)
+ls -R               # lista recursiva (todos los subdirectorios)
+ls -lh              # detallado con tamaños legibles
+```
+
+---
+
+### find — Buscar archivos
+```bash
+find ~ -name archivo.txt          # busca desde home por nombre exacto
+find . -name archivo.txt          # busca desde donde estás
+find ~ -name "*.txt"              # busca todos los .txt
+find /ruta -name archivo 2>/dev/null   # suprime errores de permisos
+```
+> `find` busca el nombre **exacto**. Si no aparece, verifica el nombre real con `ls`.
+
+---
+
+## Regla general de sintaxis
+
+```
+comando origen destino
+```
+
+El último argumento siempre es el destino. Aplica a `cp`, `mv`, `echo >`, etc.
+
+---
+
+## Errores comunes
+
+| Error | Causa | Solución |
+|-------|-------|----------|
+| `No such file or directory` | Ruta incorrecta o nombre mal escrito | Verificar con `ls` primero |
+| Archivo en lugar incorrecto | No saber dónde estás parado | Usar `pwd` antes de operar |
+| `find` no encuentra el archivo | Nombre incorrecto | Verificar nombre exacto con `ls` |
+| `rm -r` borra de más | Flag incorrecto para archivos | Sin `-r` para archivos simples |
+
+---
+
+## Ejercicio de referencia
+
+Flujo completo practicado:
+```bash
+# Crear estructura
+mkdir -p repaso/notas repaso/scripts/backup
+
+# Crear y escribir archivo
+echo "contenido" > repaso/notas/texto.txt
+echo "más líneas" >> repaso/notas/texto.txt
+
+# Leer
+cat repaso/notas/texto.txt
+head -2 repaso/notas/texto.txt
+tail -2 repaso/notas/texto.txt
+
+# Copiar, mover, eliminar
+cp repaso/notas/texto.txt repaso/scripts/copia.txt
+mv repaso/scripts/copia.txt repaso/scripts/backup/
+rm repaso/scripts/backup/copia.txt
+
+# Buscar
+find ~ -name texto.txt
+```
