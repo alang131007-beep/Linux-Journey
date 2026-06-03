@@ -565,3 +565,170 @@ rm repaso/scripts/backup/copia.txt
 # Buscar
 find ~ -name texto.txt
 ```
+
+# Semana 2 — Permisos y usuarios
+**Plan de repaso Linux · Tachyon-01**  
+**Sistema:** Ubuntu 24.04 · ThinkPad T450
+
+---
+
+## Comandos cubiertos
+
+### useradd — Crear usuarios
+```bash
+sudo useradd -m usuario          # crea usuario con directorio home
+sudo useradd -M usuario          # crea usuario sin directorio home
+sudo useradd -m -G grupo usuario # crea usuario con home y lo asigna a un grupo
+```
+> `-m` crea `/home/usuario` · `-M` lo omite · `-G` asigna grupo suplementario
+
+---
+
+### passwd — Asignar contraseña
+```bash
+sudo passwd usuario
+```
+> La contraseña se escribe de forma interactiva — nunca va en el comando directo (quedaría en el historial).
+
+---
+
+### su — Cambiar de usuario
+```bash
+su usuario      # cambia usuario pero mantiene el entorno actual
+su - usuario    # simula login completo, carga el entorno del usuario
+exit            # regresa al usuario anterior
+```
+> Siempre usar `su -` para simular un entorno real. Sin el guión los paths y variables pueden fallar.
+
+---
+
+### groupadd — Crear grupos
+```bash
+sudo groupadd nombre_grupo
+```
+
+---
+
+### usermod — Modificar usuario existente
+```bash
+sudo usermod -aG grupo usuario   # agrega usuario a un grupo sin quitarle los anteriores
+```
+> `-a` = append (agregar) · Sin `-a` reemplaza todos los grupos existentes ⚠️
+
+---
+
+### chown — Cambiar dueño o grupo
+```bash
+sudo chown usuario archivo           # cambia usuario dueño
+sudo chown :grupo archivo            # cambia solo el grupo dueño
+sudo chown usuario:grupo archivo     # cambia ambos
+sudo chown -R :grupo carpeta/        # recursivo para toda la carpeta
+```
+
+---
+
+### chmod — Cambiar permisos
+```bash
+sudo chmod 770 carpeta/    # dueño rwx, grupo rwx, otros ---
+sudo chmod 755 carpeta/    # dueño rwx, grupo r-x, otros r-x
+sudo chmod 750 carpeta/    # dueño rwx, grupo r-x, otros ---
+```
+
+#### Tabla de referencia rápida
+| Número | Permisos | Significado |
+|--------|----------|-------------|
+| 7 | rwx | leer + escribir + ejecutar |
+| 6 | rw- | leer + escribir |
+| 5 | r-x | leer + ejecutar |
+| 4 | r-- | solo leer |
+| 0 | --- | sin permisos |
+
+---
+
+### id — Verificar usuario y grupos
+```bash
+id usuario    # muestra UID, GID y todos los grupos del usuario
+```
+
+### ls -l — Verificar permisos
+```bash
+ls -l /ruta/          # muestra permisos, dueño y grupo de cada archivo/carpeta
+ls -ld /ruta/         # muestra permisos de la carpeta en sí, no su contenido
+```
+
+---
+
+## Lógica de permisos — Regla importante
+
+Los permisos son una **cadena**. Si cualquier directorio en la ruta no tiene permisos de entrada, no puedes llegar al destino aunque este sí tenga permisos.
+
+```
+/home/alanlinux/  →  repaso/  →  qa-work/
+drwxr-x---             755         770
+     ↑
+  Sin permiso para otros → hiro no puede entrar aunque qa-work tenga 770
+```
+
+**Solución:** mover carpetas compartidas a `/srv/` donde todos tienen acceso, en lugar de dentro del home de otro usuario.
+
+---
+
+## Diferencia -m vs -M
+
+| Flag | Resultado |
+|------|-----------|
+| `-m` | Crea `/home/usuario` automáticamente |
+| `-M` | No crea home — útil para usuarios de servicio |
+
+Si intentas `su -` con un usuario sin home recibirás un warning pero funciona igual.
+
+---
+
+## Flujo completo practicado
+
+```bash
+# Crear usuarios
+sudo useradd -M ken                        # sin home
+sudo useradd -m -G Developers hiro         # con home y grupo
+
+# Asignar contraseña
+sudo passwd hiro
+
+# Crear grupo y agregar usuarios
+sudo groupadd qa
+sudo usermod -aG qa hiro
+sudo usermod -aG qa ken
+
+# Verificar
+id hiro    # debe mostrar Developers y qa
+id ken     # debe mostrar qa
+
+# Crear carpeta del grupo en /srv
+sudo mkdir /srv/qa-work
+sudo chown :qa /srv/qa-work
+sudo chmod 770 /srv/qa-work
+
+# Verificar
+ls -l /srv/
+
+# Probar acceso como hiro
+su - hiro
+touch /srv/qa-work/prueba.txt    # debe funcionar (hiro está en qa)
+exit
+
+# Probar acceso como ken
+su - ken
+touch /srv/qa-work/prueba_ken.txt    # debe funcionar (ken está en qa)
+exit
+```
+
+---
+
+## Errores comunes
+
+| Error | Causa | Solución |
+|-------|-------|----------|
+| `Permission denied` en useradd/groupadd | Falta sudo | Agregar `sudo` al inicio |
+| `can't cd to /home/usuario` | Usuario creado sin `-m` | Normal si se usó `-M`, no es error crítico |
+| Usuario pierde grupos anteriores | `usermod -G` sin `-a` | Siempre usar `usermod -aG` |
+| No puede entrar a carpeta aunque tenga permisos | Directorio padre sin permisos | Verificar toda la cadena de rutas con `ls -ld` |
