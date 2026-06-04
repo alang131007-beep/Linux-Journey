@@ -732,3 +732,38 @@ exit
 | `can't cd to /home/usuario` | Usuario creado sin `-m` | Normal si se usó `-M`, no es error crítico |
 | Usuario pierde grupos anteriores | `usermod -G` sin `-a` | Siempre usar `usermod -aG` |
 | No puede entrar a carpeta aunque tenga permisos | Directorio padre sin permisos | Verificar toda la cadena de rutas con `ls -ld` |
+
+# Flags más olvidados — Usuarios y grupos
+
+## useradd
+```bash
+sudo useradd -m -G grupo usuario
+```
+| Flag | Qué hace |
+|------|----------|
+| `-m` | Crea el directorio home |
+| `-M` | NO crea el directorio home |
+| `-G` | Asigna grupo al momento de crear |
+
+> `-m` y `-G` van juntos cuando quieres home + grupo desde el inicio.
+
+---
+
+## usermod
+```bash
+sudo usermod -aG grupo usuario
+```
+| Flag | Qué hace |
+|------|----------|
+| `-aG` | Agrega al grupo SIN quitar los anteriores |
+| `-G` sin `-a` | Reemplaza todos los grupos ⚠️ |
+
+> Siempre `-aG` nunca solo `-G` al modificar grupos.
+
+---
+
+## Diferencia clave
+| Comando | Cuándo usarlo |
+|---------|--------------|
+| `useradd -G` | Al **crear** el usuario |
+| `usermod -aG` | Para **modificar** un usuario ya existente |
