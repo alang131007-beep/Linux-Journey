@@ -767,3 +767,158 @@ sudo usermod -aG grupo usuario
 |---------|--------------|
 | `useradd -G` | Al **crear** el usuario |
 | `usermod -aG` | Para **modificar** un usuario ya existente |
+
+# Semana 3 — Permisos avanzados
+**Plan de repaso Linux · Tachyon-01**  
+**Sistema:** Ubuntu 24.04 · ThinkPad T450
+
+---
+
+## Los tres permisos especiales
+
+| Permiso | Número | Letra | Se aplica en | Para qué sirve |
+|---------|--------|-------|--------------|----------------|
+| SUID | 4 | `s` en dueño | Archivos ejecutables | Corre con permisos del dueño, no del usuario |
+| SGID | 2 | `s` en grupo | Carpetas | Archivos nuevos heredan el grupo de la carpeta |
+| Sticky bit | 1 | `t` en otros | Carpetas compartidas | Solo el dueño puede borrar sus propios archivos |
+
+---
+
+## Sticky bit
+
+### Activar
+```bash
+sudo chmod +t carpeta/          # agregar sticky bit
+sudo chmod 1777 carpeta/        # con permisos completos + sticky bit
+```
+
+### Verificar
+```bash
+ls -ld /tmp
+# drwxrwxrwt — la t al final indica sticky bit activo
+```
+
+### Comportamiento
+```bash
+# Con sticky bit en /srv/compartido/
+# yuki crea un archivo
+touch /srv/compartido/archivo.txt
+
+# hiro intenta borrarlo → FALLA
+rm /srv/compartido/archivo.txt
+# rm: no se puede borrar: Operación no permitida
+
+# yuki borra su propio archivo → FUNCIONA
+rm /srv/compartido/archivo.txt
+```
+
+> Ejemplo real: `/tmp` siempre tiene sticky bit — cualquiera puede escribir pero nadie puede borrar archivos ajenos.
+
+---
+
+## SGID en carpetas
+
+### Activar
+```bash
+sudo chmod g+s carpeta/         # agregar SGID
+sudo chmod 2770 carpeta/        # con permisos 770 + SGID
+```
+
+### Verificar
+```bash
+ls -ld /srv/equipo/
+# drwxrws--- — la s en posición de grupo indica SGID activo
+```
+
+### Comportamiento
+```bash
+# Sin SGID: archivo creado por yuki tiene grupo de yuki
+-rw-rw-r-- 1 yuki yuki 0 archivo.txt
+
+# Con SGID: archivo creado por yuki hereda grupo de la carpeta
+-rw-rw-r-- 1 yuki devops 0 archivo.txt
+```
+
+> Esencial para carpetas de trabajo colaborativo — todos los archivos mantienen el mismo grupo automáticamente.
+
+---
+
+## SUID en ejecutables
+
+### Activar
+```bash
+sudo chmod u+s archivo
+sudo chmod 4755 archivo        # con permisos 755 + SUID
+```
+
+### Verificar
+```bash
+ls -l /usr/bin/passwd
+# -rwsr-xr-x — la s en posición de dueño indica SUID activo
+```
+
+> Ejemplo real: `passwd` tiene SUID — cualquier usuario puede cambiar su contraseña aunque el archivo pertenece a root.
+
+---
+
+## Cómo incluir permisos especiales con números
+
+El número especial va **al inicio** del chmod de 4 dígitos:
+
+```bash
+sudo chmod 1777 carpeta/    # sticky bit + rwxrwxrwx
+sudo chmod 2770 carpeta/    # SGID + rwxrwx---
+sudo chmod 4755 archivo     # SUID + rwxr-xr-x
+```
+
+> ⚠️ Si usas `chmod 777` después de activar un permiso especial, lo pierdes. Siempre usa el número de 4 dígitos.
+
+---
+
+## Errores comunes
+
+| Error | Causa | Solución |
+|-------|-------|----------|
+| `chmod 770` quita la `s` o la `t` | Sobreescribe permisos especiales | Usar `chmod 2770` o `chmod 1777` |
+| SGID no funciona | Carpeta sin permisos de escritura para el grupo | Verificar que el grupo tiene `w` |
+| Sticky bit no bloquea borrado | No se aplicó correctamente | Verificar con `ls -ld` que aparece `t` |
+
+---
+
+## Operadores de encadenamiento
+
+```bash
+comando1 && comando2   # ejecuta el segundo SOLO si el primero fue exitoso
+comando1 ; comando2    # ejecuta los dos sin importar si el primero falló
+```
+
+### Ejemplo real
+```bash
+sudo apt update && sudo apt upgrade
+# Si update falla → upgrade no corre
+# Si update funciona → upgrade corre
+```
+
+> Usa `&&` cuando el segundo comando depende del primero. Usa `;` cuando quieres que corran los dos pase lo que pase.
+
+---
+
+## Flujo completo practicado
+
+```bash
+# Sticky bit
+sudo mkdir /srv/compartido
+sudo chmod 1777 /srv/compartido
+ls -ld /srv/compartido          # verificar t al final
+
+# SGID
+sudo mkdir /srv/equipo
+sudo chown :devops /srv/equipo
+sudo chmod 2770 /srv/equipo
+ls -ld /srv/equipo              # verificar s en grupo
+
+# Probar SGID
+su - yuki
+touch /srv/equipo/archivo.txt
+ls -l /srv/equipo/archivo.txt   # grupo debe ser devops, no yuki
+```
