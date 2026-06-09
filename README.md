@@ -922,3 +922,145 @@ su - yuki
 touch /srv/equipo/archivo.txt
 ls -l /srv/equipo/archivo.txt   # grupo debe ser devops, no yuki
 ```
+
+# Semana 4 — Procesos
+**Plan de repaso Linux · Tachyon-01**  
+**Sistema:** Ubuntu 24.04 · ThinkPad T450
+
+---
+
+## Comandos cubiertos
+
+### ps — Ver procesos
+```bash
+ps aux                        # todos los procesos del sistema
+ps aux | grep alanlinux       # filtrar por usuario
+ps aux | grep nombre          # filtrar por nombre de proceso
+```
+
+Columnas importantes:
+| Columna | Qué es |
+|---------|--------|
+| PID | ID único del proceso |
+| %CPU | Porcentaje de CPU que usa |
+| %MEM | Porcentaje de RAM que usa |
+| COMMAND | Nombre del proceso |
+
+---
+
+### & — Lanzar en background
+```bash
+sleep 300 &       # lanza el proceso en background
+# la terminal queda libre
+```
+
+---
+
+### jobs — Ver procesos en background
+```bash
+jobs              # lista jobs activos
+jobs -l           # lista jobs con su PID
+```
+
+Salida típica:
+```
+[1]- 11013 Ejecutando    sleep 200 &
+[2]+ 11015 Ejecutando    sleep 300 &
+```
+> El número entre `[]` es el número de job. El `+` indica el más reciente.
+
+---
+
+### fg — Traer al foreground
+```bash
+fg        # trae el último job al frente
+fg %2     # trae el job número 2
+```
+> La terminal se bloquea hasta que el proceso termine o lo canceles con `Ctrl+C`.
+
+---
+
+### kill — Matar procesos
+```bash
+kill PID        # mata por PID
+kill %1         # mata por número de job
+kill %2         # mata el job número 2
+killall sleep   # mata todos los procesos con ese nombre
+```
+
+| Comando | Cuándo usarlo |
+|---------|--------------|
+| `kill PID` | Cuando tienes el PID exacto |
+| `kill %n` | Cuando quieres matar un job específico sin afectar otros |
+| `killall nombre` | Cuando quieres matar todos los procesos con ese nombre |
+
+---
+
+### htop — Monitor visual
+```bash
+htop
+```
+
+Teclas útiles dentro de htop:
+| Tecla | Acción |
+|-------|--------|
+| `F6` | Ordenar por columna (CPU, MEM, etc.) |
+| `F9` | Matar proceso seleccionado |
+| `F` | Congelar pantalla (freeze) |
+| `q` | Salir |
+
+> En la parte superior muestra CPU, RAM y swap en tiempo real. Útil para identificar qué proceso está consumiendo más recursos.
+
+---
+
+## Diferencias clave
+
+```bash
+kill 1234      # mata el proceso con PID 1234
+kill %1        # mata el job número 1 (no necesita PID)
+killall sleep  # mata TODOS los procesos llamados sleep
+```
+
+```bash
+comando &      # background — terminal libre
+fg             # foreground — terminal bloqueada
+Ctrl+C         # cancela el proceso en foreground
+```
+
+---
+
+## Flujo completo practicado
+
+```bash
+# Ver procesos filtrados
+ps aux | grep alanlinux
+
+# Lanzar procesos en background
+sleep 200 &
+sleep 300 &
+
+# Ver jobs con PID
+jobs -l
+
+# Matar solo el primero por número de job
+kill %1
+
+# Verificar que solo queda el segundo
+jobs
+
+# Matar el resto por nombre
+killall sleep
+
+# Monitor visual
+htop
+```
+
+---
+
+## Errores comunes
+
+| Error | Causa | Solución |
+|-------|-------|----------|
+| `killall nombre` mata más de lo esperado | Mata todos los procesos con ese nombre | Usar `kill %n` o `kill PID` para más precisión |
+| Terminal bloqueada | Proceso en foreground | `Ctrl+C` para cancelar |
+| `grep` se muestra a sí mismo en resultados | Normal — grep también es un proceso | Ignorarlo o usar `grep -v grep` para filtrarlo |
