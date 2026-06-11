@@ -1064,3 +1064,279 @@ htop
 | `killall nombre` mata más de lo esperado | Mata todos los procesos con ese nombre | Usar `kill %n` o `kill PID` para más precisión |
 | Terminal bloqueada | Proceso en foreground | `Ctrl+C` para cancelar |
 | `grep` se muestra a sí mismo en resultados | Normal — grep también es un proceso | Ignorarlo o usar `grep -v grep` para filtrarlo |
+
+# Semana 5 — Redirección y pipes
+**Plan de repaso Linux · Tachyon-01**  
+**Sistema:** Ubuntu 24.04 · ThinkPad T450
+
+---
+
+## Redirección
+
+```bash
+comando > archivo.txt      # redirige stdout — sobreescribe
+comando >> archivo.txt     # redirige stdout — acumula
+comando 2> errores.txt     # redirige stderr (errores)
+comando > archivo 2>&1     # redirige stdout Y stderr al mismo archivo
+```
+
+### Canales
+| Número | Canal | Qué es |
+|--------|-------|--------|
+| 0 | stdin | entrada |
+| 1 | stdout | salida normal |
+| 2 | stderr | errores |
+
+### 2>&1
+```bash
+ls /home/ /ruta/falsa > todo.txt 2>&1
+```
+- `> todo.txt` → manda stdout al archivo
+- `2>&1` → manda stderr al mismo lugar que stdout
+
+> ⚠️ El orden importa — primero `>` luego `2>&1`, no al revés.
+
+---
+
+## Pipes
+
+```bash
+comando1 | comando2     # pasa la salida de comando1 como entrada de comando2
+```
+
+### Diferencia clave
+| Operador | Para qué |
+|----------|----------|
+| `\|` | Conecta datos entre comandos |
+| `&&` | Ejecuta el segundo solo si el primero fue exitoso |
+| `;` | Ejecuta los dos sin importar resultado |
+
+---
+
+## Comandos útiles con pipes
+
+### wc -l — contar líneas
+```bash
+ls /home/ | wc -l          # cuántos usuarios hay en home
+cat archivo.txt | wc -l    # cuántas líneas tiene un archivo
+```
+
+### grep — filtrar
+```bash
+ls /home/ | grep a         # usuarios que tengan "a" en el nombre
+ps aux | grep alanlinux    # procesos de un usuario
+```
+
+### sort — ordenar
+```bash
+ls /home/ | sort           # orden alfabético
+ls /home/ | sort -r        # orden inverso
+```
+
+### head / tail — recortar
+```bash
+ls /home/ | head -3        # primeras 3 líneas
+ls /home/ | tail -3        # últimas 3 líneas
+```
+
+---
+
+## Encadenar múltiples pipes
+
+```bash
+ls /home/ | grep a | sort -r | head -3
+# lista home → filtra los que tienen "a" → ordena al revés → muestra los primeros 3
+```
+
+---
+
+## Flujo completo practicado
+
+```bash
+# Redirigir error a archivo
+ls /ruta/falsa 2> errores.log
+cat errores.log
+
+# Redirigir stdout y stderr al mismo archivo
+ls /home/ /ruta/falsa > todo.txt 2>&1
+cat todo.txt
+
+# Contar usuarios
+ls /home/ | wc -l
+
+# Filtrar y guardar
+ls /home/ | grep a | sort > usuarios_a.txt
+
+# Encadenar 3 pipes
+cat usuarios_a.txt | sort -r | head -3
+```
+
+---
+
+## Errores comunes
+
+| Error | Causa | Solución |
+|-------|-------|----------|
+| `2>&1` no captura errores | Orden incorrecto | Siempre `> archivo 2>&1` no `2>&1 > archivo` |
+| `wc -l` da número muy alto | Usando `ls -l` en lugar de `ls` | Solo `ls` sin flags para contar |
+| Pipe no funciona | Falta `\|` entre comandos | Verificar que el pipe está entre los dos comandos |
+
+# Semana 6 — Bash Scripting
+**Plan de repaso Linux · Tachyon-01**  
+**Sistema:** Ubuntu 24.04 · ThinkPad T450
+
+---
+
+## Estructura básica de un script
+
+```bash
+#!/bin/bash
+# El shebang siempre va en la primera línea
+# Le dice al sistema qué intérprete usar
+```
+
+### Crear y ejecutar
+```bash
+nano script.sh          # crear el script
+chmod +x script.sh      # dar permisos de ejecución
+./script.sh             # ejecutar
+bash script.sh          # ejecutar sin necesitar chmod (ignora shebang)
+```
+
+> ⚠️ Linux es case sensitive — `#!/bin/Bash` falla, debe ser `#!/bin/bash`
+
+---
+
+## Variables
+
+```bash
+VARIABLE="valor"        # declarar (sin espacios alrededor del =)
+echo $VARIABLE          # usar la variable con $
+echo "$VARIABLE"        # recomendado — entre comillas para evitar errores
+```
+
+### Variables especiales
+| Variable | Qué contiene |
+|----------|-------------|
+| `$USER` | Usuario que ejecuta el script |
+| `$1` | Primer argumento al ejecutar |
+| `$2` | Segundo argumento |
+| `$@` | Todos los argumentos |
+
+---
+
+## Condicionales
+
+```bash
+if [ condición ]; then
+    comando
+else
+    comando
+fi
+```
+
+> ⚠️ Los espacios dentro de `[ ]` son obligatorios en bash.
+
+### Comparaciones comunes
+| Operador | Para qué |
+|----------|----------|
+| `==` | Strings iguales |
+| `!=` | Strings diferentes |
+| `-z "$var"` | Variable vacía |
+| `-n "$var"` | Variable no vacía |
+| `-eq` | Números iguales |
+| `-gt` | Mayor que |
+| `-lt` | Menor que |
+
+---
+
+## Loops
+
+### for
+```bash
+for i in 1 2 3 4 5; do
+    echo $i
+done
+
+# Con rango
+for i in {1..5}; do
+    echo $i
+done
+
+# Con lista de strings
+for i in akira hiro yuki; do
+    echo $i
+done
+```
+
+> `do` = empieza a repetir · `done` = termina de repetir
+
+---
+
+## Argumentos
+
+```bash
+./script.sh Alan Hiro     # pasar argumentos al ejecutar
+```
+
+Dentro del script:
+```bash
+$1    # primer argumento  → "Alan"
+$2    # segundo argumento → "Hiro"
+$@    # todos los argumentos
+```
+
+### Verificar si se pasó argumento
+```bash
+if [ -z "$1" ]; then
+    echo "Por favor ingresa un nombre"
+else
+    echo "Hola $1"
+fi
+```
+
+---
+
+## Flujo completo practicado
+
+```bash
+#!/bin/bash
+
+# Variable
+MENSAJE="Hola Nexus Tech"
+echo "$MENSAJE"
+
+# Condicional con $USER
+if [ $USER == "alanlinux" ]; then
+    echo "Bienvenido Admin"
+else
+    echo "Acceso restringido"
+fi
+
+# Loop con nombres
+for i in akira hiro yuki; do
+    echo $i
+done
+```
+
+```bash
+#!/bin/bash
+# Script con argumento
+
+if [ -z "$1" ]; then
+    echo "Por favor ingresa un nombre"
+else
+    echo "Hola $1"
+fi
+```
+
+---
+
+## Errores comunes
+
+| Error | Causa | Solución |
+|-------|-------|----------|
+| `Permiso denegado` al ejecutar | Sin permiso de ejecución | `chmod +x script.sh` |
+| Variable imprime nombre literal | Falta `$` antes del nombre | Usar `$VARIABLE` no `VARIABLE` |
+| `syntax error near unexpected token` | Falta `fi` o `done` | Verificar que todo bloque esté cerrado |
+| `#!/bin/Bash` falla | Case sensitive | Siempre minúsculas: `#!/bin/bash` |
